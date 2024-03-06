@@ -104,7 +104,6 @@ def login():
     user = User.query.filter_by(username=data['username']).first()
     if user and user.check_password(data['password']):
         access_token = create_access_token(identity={"username": data['username'], "user_id": user.id})
-        print(access_token)
         return jsonify({"message": "Logged in successfully", "access_token": access_token})
     return jsonify({"message": "Invalid username or password"}), 401
 
@@ -159,4 +158,4 @@ def watch_history():
     
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
