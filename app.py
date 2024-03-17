@@ -19,13 +19,13 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 jwt = JWTManager(app)
 
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
     search_history = db.relationship('SearchHistory', back_populates='user')
-
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -45,6 +45,10 @@ with app.app_context():
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+@app.route('/test',methods=['GET'])
+def test():
+    return jsonify({"response":"test completetd"})
 
 @app.route('/get_stock',methods=['POST'])
 def get_stock():
@@ -98,6 +102,7 @@ def register():
     db.session.commit()
     return jsonify({"message": "User registered successfully"}), 201
 
+
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -107,9 +112,10 @@ def login():
         return jsonify({"message": "Logged in successfully", "access_token": access_token})
     return jsonify({"message": "Invalid username or password"}), 401
 
+
 @app.route('/watch_history', methods=['GET','POST'])
 @jwt_required()
-def watch_history():
+def watch_history(SearchHistory):
     if request.method == 'GET':
         user_identity = get_jwt_identity()
         user_id = user_identity.get('user_id')
@@ -144,7 +150,6 @@ def watch_history():
 
     
     elif request.method == 'POST':
-        print('we here!')
         data = request.json
         query = data.get('query')
         if query:
@@ -156,6 +161,5 @@ def watch_history():
             return jsonify({"message":"Added to search history"}), 201
         return jsonify({"error": "Query parameter is required"}), 400
     
-
 if __name__ == "__main__":
     app.run(debug=False)
