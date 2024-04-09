@@ -115,7 +115,7 @@ def login():
 
 @app.route('/watch_history', methods=['GET','POST'])
 @jwt_required()
-def watch_history(SearchHistory):
+def watch_history():
     if request.method == 'GET':
         user_identity = get_jwt_identity()
         user_id = user_identity.get('user_id')
